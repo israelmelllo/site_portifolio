@@ -1,0 +1,919 @@
+<!DOCTYPE html><html class="dark scroll-smooth" lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<title>Israel Melo // Mini Apps, Painéis &amp; Automações</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-base": "#050505",
+            "surface-card": "#0c0c0e",
+            "surface-container": "#141416",
+            "surface-container-high": "#1b1b1f",
+            "border-hairline": "rgba(255, 255, 255, 0.07)",
+            "border-amber-subtle": "rgba(255, 194, 74, 0.18)",
+            "border-amber-glow": "rgba(255, 194, 74, 0.35)",
+            "primary-container": "#ffc24a",
+            "primary-amber": "#ffc24a",
+            "amber-mid": "#e9931e",
+            "amber-deep": "#a85a0c",
+            "text-primary": "#F5F5F7",
+            "text-secondary": "#A1A1AA",
+            "text-muted": "#60606A",
+          },
+          fontFamily: {
+            sans: ["Geist", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    @layer base {
+      html, body {
+        background-color: #050505;
+        color: #F5F5F7;
+        font-family: 'Geist', sans-serif;
+      }
+    }
+    .amber-gradient-text {
+      background: linear-gradient(135deg, #FFC24A 0%, #E9931E 52%, #A85A0C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Keyframes looping for continuous robotic hand pointing gesture */
+    @keyframes roboticHandCycle {
+      0% {
+        transform: translateY(55px) translateX(25px) scale(0.94) rotate(4deg);
+        opacity: 0.85;
+      }
+      38% {
+        transform: translateY(-8px) translateX(-6px) scale(1.02) rotate(-1.5deg);
+        opacity: 1;
+      }
+      55% {
+        transform: translateY(-4px) translateX(-4px) scale(1.01) rotate(-1deg);
+        opacity: 1;
+      }
+      75% {
+        transform: translateY(18px) translateX(8px) scale(0.97) rotate(1deg);
+        opacity: 0.95;
+      }
+      100% {
+        transform: translateY(55px) translateX(25px) scale(0.94) rotate(4deg);
+        opacity: 0.85;
+      }
+    }
+
+    @keyframes fingertipPulse {
+      0%, 100% {
+        opacity: 0.2;
+        transform: scale(0.7);
+        filter: blur(1px);
+      }
+      38%, 55% {
+        opacity: 1;
+        transform: scale(1.35);
+        filter: blur(0px);
+        box-shadow: 0 0 25px 8px rgba(255, 194, 74, 0.95), 0 0 50px 18px rgba(255, 194, 74, 0.45);
+      }
+      75% {
+        opacity: 0.4;
+        transform: scale(0.9);
+      }
+    }
+
+    @keyframes fingertipBeam {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0.6) rotate(-35deg);
+      }
+      35% {
+        opacity: 0.2;
+      }
+      45%, 55% {
+        opacity: 0.85;
+        transform: scale(1.1) rotate(-35deg);
+      }
+      70% {
+        opacity: 0.1;
+      }
+    }
+
+    .robotic-hand-animated {
+      animation: roboticHandCycle 4.8s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+    }
+
+    .fingertip-glow-pulse {
+      animation: fingertipPulse 4.8s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+    }
+
+    .fingertip-beam-pulse {
+      animation: fingertipBeam 4.8s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+    }
+
+    /* Mask to blend any potential hard edges flawlessly with #050505 */
+    .hero-hand-mask {
+      mask-image: radial-gradient(circle at 45% 45%, black 60%, rgba(0,0,0,0.8) 78%, transparent 98%);
+      -webkit-mask-image: radial-gradient(circle at 45% 45%, black 60%, rgba(0,0,0,0.8) 78%, transparent 98%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .robotic-hand-animated,
+      .fingertip-glow-pulse,
+      .fingertip-beam-pulse {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-surface-base text-text-primary antialiased selection:bg-primary-amber selection:text-black">
+<!-- ========================================================================= -->
+<!-- NAVIGATION BAR                                                            -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#050505]/85 backdrop-blur-md border-b border-border-hairline">
+<div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+<!-- Brand identifier -->
+<a class="flex items-center gap-2.5 group" href="#">
+<span class="w-2 h-2 rounded-full bg-primary-amber shadow-[0_0_10px_rgba(255,194,74,0.8)]"></span>
+<span class="font-mono text-sm tracking-tight text-text-primary">JAT Consultoria <span class="text-text-muted">//</span> <span class="text-primary-amber">Data &amp; Process</span></span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-7 text-xs font-mono tracking-wider uppercase text-text-secondary">
+<a class="hover:text-primary-amber transition-colors" href="#capabilities">Capabilities</a>
+<a class="hover:text-primary-amber transition-colors" href="#servicos">Casos de Uso</a>
+<a class="hover:text-primary-amber transition-colors" href="#aplicacoes-praticas">Aplicações Práticas</a>
+<a class="hover:text-primary-amber transition-colors" href="#como-funciona">Como Funciona</a>
+<a class="hover:text-primary-amber transition-colors" href="#sobre">Quem Faz</a>
+</nav>
+<!-- CTA Contact Anchor -->
+<div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-amber text-black font-medium text-xs font-mono uppercase tracking-wide hover:bg-[#ffe082] transition-all shadow-[0_0_20px_rgba(255,194,74,0.22)]" href="https://wa.me/5500000000000" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+<span class="">WhatsApp</span>
+</a>
+</div>
+</div>
+</header>
+<main class="w-full relative overflow-hidden pt-16">
+<!-- Architectural Subtle Grid Guides -->
+<div class="pointer-events-none absolute inset-0 z-0 flex justify-between max-w-7xl mx-auto px-5 sm:px-8 opacity-25">
+<div class="w-px h-full bg-white/5"></div>
+<div class="w-px h-full bg-white/5 hidden md:block"></div>
+<div class="w-px h-full bg-white/5 hidden md:block"></div>
+<div class="w-px h-full bg-white/5"></div>
+</div>
+<!-- Soft Ambient Amber Radial Glow -->
+<div class="pointer-events-none absolute -top-48 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-primary-amber/10 blur-[130px] rounded-full z-0"></div>
+<!-- ========================================================================= -->
+<!-- 1. HERO SECTION (WITH CONTINUOUS ANIMATED ROBOTIC HAND & ENERGY FOCUS)     -->
+<!-- ========================================================================= -->
+<section class="relative z-10 w-full bg-gradient-to-b from-[#ffc24a] via-[#f7b83d] to-[#e89f21] text-black overflow-hidden border-b border-primary-amber/30" style="background: linear-gradient(135deg, rgb(255, 194, 74) 0%, rgb(255, 184, 0) 48%, rgb(229, 165, 42) 100%);"><div class="pointer-events-none absolute -top-24 -right-24 w-[500px] h-[500px] bg-white/30 rounded-full blur-[110px] z-0"></div><div class="pointer-events-none absolute bottom-0 left-10 w-[400px] h-[400px] bg-[#d28000]/20 rounded-full blur-[90px] z-0"></div><div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-10 md:pt-16 pb-16 md:pb-20"><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"><div class="lg:col-span-7 xl:col-span-7 z-10"><div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/10 border border-black/15 mb-6 backdrop-blur-md"><span class="w-2 h-2 rounded-full bg-black animate-pulse"></span><span class="font-mono text-[11px] uppercase tracking-widest text-black font-semibold">ENGENHARIA DE DADOS &amp; MINI APPS</span></div><h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#0a0a0c] leading-[1.12] mb-5">Mini apps, painéis e automações <span class="text-[#724500] underline decoration-[#a85a0c]/40 underline-offset-8">sob medida</span> para o seu negócio.</h1><p class="text-lg md:text-xl text-[#222126] font-medium leading-relaxed mb-6 max-w-2xl">Eu transformo planilhas, anotações e processos manuais em ferramentas simples de usar: agenda com lembretes, painéis de resultado, assistentes de atendimento e muito mais. Sem sistema pesado e com custo de manutenção baixo.</p><div class="p-4 sm:p-5 rounded-xl bg-black/[0.08] border border-black/15 backdrop-blur-md max-w-2xl mb-7 shadow-sm"><div class="flex flex-col sm:flex-row sm:items-center gap-3"><span class="font-mono text-xs text-[#3a3528] uppercase tracking-wider shrink-0 font-bold">Ideal para:</span><div class="flex flex-wrap items-center gap-2 text-xs text-black font-semibold"><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">💇‍♀️ Salões e estética</span><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">🏥 Clínicas e consultórios</span><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">💪 Personal trainers</span><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">🎸 Igrejas e bandas</span><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">🛍️ Pequenos comércios</span><span class="px-3 py-1 rounded-md bg-white/70 border border-black/10 text-black shadow-sm">👥 Equipes internas</span></div></div></div><div class="flex flex-wrap items-center gap-4"><a class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-black text-[#ffc24a] font-bold text-sm hover:bg-[#1a1a1f] transition-all shadow-xl" href="https://wa.me/5500000000000" rel="noopener noreferrer" target="_blank"><span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">chat</span><span class="">Conversar no WhatsApp</span></a><a class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/60 border border-black/15 text-black font-semibold text-sm hover:bg-white/90 hover:border-black/30 transition-all shadow-sm" href="#aplicacoes-praticas"><span class="material-symbols-outlined text-[19px]">visibility</span><span class="">Ver aplicações</span></a></div></div><div class="lg:col-span-5 xl:col-span-5 relative flex items-center justify-center pt-2 lg:pt-0 overflow-visible"><div class="pointer-events-none absolute w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] bg-white/30 rounded-full blur-[90px] z-0 -top-8 right-0"></div><div class="relative z-10 w-full flex items-center justify-center"><div class="relative w-[340px] sm:w-[440px] h-[480px] sm:h-[540px] flex items-center justify-center robotic-hand-animated select-none pointer-events-none"><div class="relative w-full h-full flex items-center justify-center overflow-visible"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV1zBUEf88hFDTnmoCMP30365vjRofs_F5wPHi8utYiziEgyLppoL3moDeojFgjJZh62HsfRSo-ZtGu5IuB1fEelyoIZJ7xhwbXpR8b99P_WlqGdhoHbz0kqCq07yDQMsPKaSROHx95NxRGQnGmrQUroqg9tsQbyKvH-vHd0hxTrAtY5W8uoxIdGxhrKNuPQhQb3g7RDw2vigiAw5KkauBa2T4FFFGFL5OucF48xC3IQiGgfwD0ie1" alt="Mão robótica biônica apontando sob medida" class="w-full h-full object-contain filter contrast-[1.05] brightness-[1.02] drop-shadow-[0_15px_25px_rgba(210,128,0,0.35)]"><div class="pointer-events-none absolute top-[14%] left-[28%] -translate-x-1/2 -translate-y-1/2 z-30"><div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-black/20 shadow-[0_0_15px_rgba(255,194,74,0.8)] fingertip-glow-pulse"></div><div class="absolute -inset-2.5 rounded-full bg-amber-400/60 blur-[4px] fingertip-glow-pulse"></div><div class="absolute -top-10 -left-12 w-24 h-7 bg-gradient-to-r from-transparent via-amber-300/40 to-transparent rounded-full blur-[6px] fingertip-beam-pulse pointer-events-none"></div></div></div></div></div></div></div></div></section>
+<!-- ========================================================================= -->
+<!-- 2. CAPABILITIES / PROPOSTA DE VALOR                                       -->
+<!-- ========================================================================= -->
+<section class="relative z-10 w-full border-t border-border-hairline bg-[#08080a]/60 py-12" id="capabilities">
+<div class="max-w-7xl mx-auto px-5 sm:px-8">
+<!-- Top Strip -->
+<div class="flex items-center justify-between pb-6 mb-4 border-b border-border-hairline">
+<span class="font-mono text-xs uppercase tracking-widest text-primary-amber">01 // CAPABILITIES</span>
+
+</div>
+<div class="max-w-3xl mb-8">
+<h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-text-primary mb-4">
+<span class="amber-gradient-text">Clareza</span> através de cada camada.
+          </h2>
+<p class="text-base sm:text-lg text-text-secondary leading-relaxed">
+            Uma visão unificada da sua operação. Detecte gargalos, automatize rotinas e otimize resultados com ferramentas leves e diretas.
+          </p>
+</div>
+<!-- 3 Glass Vitreous Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="p-6 sm:p-7 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all duration-300 flex flex-col justify-between group">
+<div>
+<!-- Radar Vector Visual -->
+<div class="w-full h-40 rounded-xl bg-surface-base/80 border border-border-hairline flex items-center justify-center mb-6 overflow-hidden relative">
+<svg class="w-36 h-36 text-primary-amber/40 group-hover:text-primary-amber/60 transition-colors" fill="none" viewBox="0 0 120 120">
+<circle cx="60" cy="60" r="50" stroke="currentColor" stroke-dasharray="2 4" stroke-width="1"></circle>
+<circle cx="60" cy="60" r="34" stroke="currentColor" stroke-width="1.2"></circle>
+<circle cx="60" cy="60" r="18" stroke="currentColor" stroke-width="1.5"></circle>
+<circle cx="60" cy="60" fill="#FFC24A" r="4"></circle>
+<line stroke="currentColor" stroke-dasharray="1 3" stroke-width="0.8" x1="60" x2="60" y1="10" y2="110"></line>
+<line stroke="currentColor" stroke-dasharray="1 3" stroke-width="0.8" x1="10" x2="110" y1="60" y2="60"></line>
+<circle class="animate-pulse" cx="78" cy="46" fill="#FFE5BC" r="3.5"></circle>
+</svg>
+<div class="absolute bottom-2.5 left-3 font-mono text-[10px] text-text-muted uppercase">APP_SYNC // ATIVO</div>
+</div>
+<h3 class="text-xl font-medium text-text-primary mb-2.5">Sinais &amp; Mini Apps no Celular</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+                Agendamento rápido, formulários e controle de clientes na palma da mão, acessível por link direto sem downloads pesados.
+              </p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-6 sm:p-7 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all duration-300 flex flex-col justify-between group">
+<div>
+<!-- Bar / Chart Vector Visual -->
+<div class="w-full h-40 rounded-xl bg-surface-base/80 border border-border-hairline flex items-center justify-center mb-6 overflow-hidden relative">
+<svg class="w-48 h-32 text-primary-amber" fill="none" viewBox="0 0 180 100">
+<line stroke="rgba(255,255,255,0.1)" stroke-width="1" x1="20" x2="160" y1="85" y2="85"></line>
+<rect fill="#FFC24A" fill-opacity="0.25" height="40" rx="3" stroke="#FFC24A" stroke-width="1" width="16" x="35" y="45"></rect>
+<rect fill="#FFC24A" fill-opacity="0.5" height="57" rx="3" stroke="#FFC24A" stroke-width="1" width="16" x="65" y="28"></rect>
+<rect fill="#FFC24A" fill-opacity="0.2" height="30" rx="3" stroke="#FFC24A" stroke-width="1" width="16" x="95" y="55"></rect>
+<rect fill="#FFC24A" fill-opacity="0.8" height="67" rx="3" stroke="#FFC24A" stroke-width="1" width="16" x="125" y="18"></rect>
+<path d="M43 45 L73 28 L103 55 L133 18" stroke="#FFE5BC" stroke-linecap="round" stroke-width="1.8"></path>
+</svg>
+<div class="absolute bottom-2.5 left-3 font-mono text-[10px] text-text-muted uppercase">METRICS // REVENUE + MARGIN</div>
+</div>
+<h3 class="text-xl font-medium text-text-primary mb-2.5">Painéis de Decisão &amp; BI</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+                Saiba exatamente quanto faturou, quem compareceu e quais serviços mais vendem, direto no Power BI ou em planilhas dinâmicas.
+              </p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-6 sm:p-7 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all duration-300 flex flex-col justify-between group">
+<div>
+<!-- Stacked Nodes & Flows Visual -->
+<div class="w-full h-40 rounded-xl bg-surface-base/80 border border-border-hairline flex items-center justify-center mb-6 overflow-hidden relative">
+<svg class="w-48 h-32 text-primary-amber" fill="none" viewBox="0 0 180 100">
+<rect fill="#1C1B1F" height="36" rx="5" stroke="#FFC24A" stroke-opacity="0.6" stroke-width="1" width="40" x="25" y="32"></rect>
+<rect fill="#1C1B1F" height="36" rx="5" stroke="#FFC24A" stroke-opacity="0.6" stroke-width="1" width="40" x="115" y="32"></rect>
+<line stroke="#FFC24A" stroke-dasharray="3 3" stroke-width="1.5" x1="65" x2="115" y1="50" y2="50"></line>
+<circle cx="90" cy="50" fill="#FFC24A" r="4"></circle>
+<line stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" x1="33" x2="57" y1="44" y2="44"></line>
+<line stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" x1="33" x2="50" y1="52" y2="52"></line>
+<line stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" x1="123" x2="147" y1="44" y2="44"></line>
+<line stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" x1="123" x2="140" y1="52" y2="52"></line>
+</svg>
+<div class="absolute bottom-2.5 left-3 font-mono text-[10px] text-text-muted uppercase">PIPELINE // SECURE &amp; LGPD</div>
+</div>
+<h3 class="text-xl font-medium text-text-primary mb-2.5">Automações &amp; Assistentes</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+                Passo a passo no balcão, integração de APIs e rotinas automáticas com banco de dados seguro e conformidade LGPD.
+              </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 3. CASOS DE USO (SERVIÇOS REAIS COM ÁREA VISUAL GRÁFICA DE DESTAQUE)      -->
+<!-- ========================================================================= -->
+<section class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-12" id="servicos">
+<div class="max-w-2xl mb-8">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-xs uppercase tracking-widest text-primary-amber">02 // SERVIÇOS &amp; PRODUTOS</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary">Casos de Uso</h2>
+</div>
+<!-- Clean 5-Service Grid com áreas visuais enriquecidas -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Serviço 1: Mini apps sob medida -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all flex flex-col justify-between group">
+<div>
+<!-- Header / Badge + Micro-Interface Mockup -->
+<div class="w-full h-36 rounded-xl bg-surface-base/90 border border-border-hairline mb-5 p-3 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-[10px] uppercase text-text-secondary">UI_MOBILE // RESPONSIVE</span>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-primary-amber/15 text-primary-amber border border-primary-amber/30">PWA LINK</span>
+</div>
+<!-- Micro Wireframe UI Preview -->
+<div class="grid grid-cols-3 gap-1.5 z-10 my-auto">
+<div class="p-1.5 rounded bg-[#161619] border border-white/5 flex flex-col gap-1">
+<div class="w-3/4 h-1.5 bg-primary-amber/60 rounded"></div>
+<div class="w-1/2 h-1 bg-white/20 rounded"></div>
+</div>
+<div class="p-1.5 rounded bg-[#161619] border border-primary-amber/30 flex flex-col gap-1">
+<div class="w-full h-1.5 bg-primary-amber rounded"></div>
+<div class="w-2/3 h-1 bg-white/30 rounded"></div>
+</div>
+<div class="p-1.5 rounded bg-[#161619] border border-white/5 flex flex-col gap-1">
+<div class="w-2/3 h-1.5 bg-white/30 rounded"></div>
+<div class="w-1/2 h-1 bg-white/10 rounded"></div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted z-10">
+<span class="">INSTANT LOAD: 0.2s</span>
+<span class="text-primary-amber">NO APP STORE</span>
+</div>
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-amber/10 blur-xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center gap-3 mb-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-lg border border-border-hairline shrink-0">
+      📱
+    </div>
+<h3 class="text-lg font-medium text-text-primary">Mini apps sob medida</h3>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-4">
+    Agendamento, cadastros, controle de clientes e pagamentos, funcionando no celular e com link direto para compartilhar.
+  </p>
+</div>
+<span class="font-mono text-[11px] text-primary-amber tracking-wide pt-2 border-t border-border-hairline">Sem instalação de apps pesados</span>
+</div>
+<!-- Serviço 2: Painéis e relatórios -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all flex flex-col justify-between group">
+<div>
+<!-- Header / Visual Tech Chart -->
+<div class="w-full h-36 rounded-xl bg-surface-base/90 border border-border-hairline mb-5 p-3 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-mono text-[10px] uppercase text-text-secondary">POWER BI &amp; SHEETS</span>
+</div>
+<span class="font-mono text-[10px] text-primary-amber">+28.4% MRR</span>
+</div>
+<!-- Bar Chart SVG Graphic -->
+<div class="w-full h-14 flex items-end justify-between gap-1.5 px-2 z-10">
+<div class="w-full bg-[#1b1b1f] rounded-t h-[40%]"></div>
+<div class="w-full bg-primary-amber/30 rounded-t h-[65%]"></div>
+<div class="w-full bg-[#1b1b1f] rounded-t h-[50%]"></div>
+<div class="w-full bg-primary-amber/55 rounded-t h-[80%]"></div>
+<div class="w-full bg-primary-amber rounded-t h-[100%] shadow-[0_0_8px_rgba(255,194,74,0.4)]"></div>
+<div class="w-full bg-primary-amber/70 rounded-t h-[88%]"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted z-10">
+<span class="">METRIC: FATURAMENTO</span>
+<span class="text-text-secondary">KPI AUTO-REFRESH</span>
+</div>
+<div class="absolute -left-6 -bottom-6 w-24 h-24 bg-primary-amber/10 blur-xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center gap-3 mb-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-lg border border-border-hairline shrink-0">
+      📊
+    </div>
+<h3 class="text-lg font-medium text-text-primary">Painéis e relatórios</h3>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-4">
+    Indicadores claros do seu mês: quanto entrou, quem veio, o que mais vende. Em Power BI ou direto em planilhas inteligentes.
+  </p>
+</div>
+<span class="font-mono text-[11px] text-primary-amber tracking-wide pt-2 border-t border-border-hairline">Visão financeira e operacional clara</span>
+</div>
+<!-- Serviço 3: Assistentes de atendimento -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all flex flex-col justify-between group">
+<div>
+<!-- Header / Flow & Protocol Visual -->
+<div class="w-full h-36 rounded-xl bg-surface-base/90 border border-border-hairline mb-5 p-3 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-[10px] uppercase text-text-secondary">FLUXOGRAMA // BALCÃO</span>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted border border-white/5">PIN 4-DIG</span>
+</div>
+<!-- Decision Flow Stepper Graphic -->
+<div class="flex items-center justify-between gap-1 z-10 py-1">
+<div class="px-2 py-1 rounded bg-[#1c1b1f] border border-primary-amber/40 text-[10px] font-mono text-primary-amber">1. Triagem</div>
+<span class="text-primary-amber text-xs">→</span>
+<div class="px-2 py-1 rounded bg-[#1c1b1f] border border-white/10 text-[10px] font-mono text-text-secondary">2. Convênio</div>
+<span class="text-white/20 text-xs">→</span>
+<div class="px-2 py-1 rounded bg-[#1c1b1f] border border-emerald-500/40 text-[10px] font-mono text-emerald-400">3. Check-in</div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted z-10">
+<span class="">GUIA INTERATIVO</span>
+<span class="text-primary-amber">ZERO ERRO</span>
+</div>
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-amber/10 blur-xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center gap-3 mb-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-lg border border-border-hairline shrink-0">
+      🧩
+    </div>
+<h3 class="text-lg font-medium text-text-primary">Assistentes de atendimento</h3>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-4">
+    Passo a passo para a equipe seguir no balcão: perguntas de triagem, regras de cobrança, valores e orientações em um só lugar.
+  </p>
+</div>
+<span class="font-mono text-[11px] text-primary-amber tracking-wide pt-2 border-t border-border-hairline">Padronização e zero esquecimentos</span>
+</div>
+<!-- Serviço 4: Dados e automações -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all flex flex-col justify-between group">
+<div>
+<!-- Header / Cloud Pipeline Visual -->
+<div class="w-full h-36 rounded-xl bg-surface-base/90 border border-border-hairline mb-5 p-3 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+<span class="font-mono text-[10px] uppercase text-text-secondary">ETL // PIPELINES CLOUD</span>
+</div>
+<span class="font-mono text-[10px] text-text-muted">AWS + AZURE</span>
+</div>
+<!-- Node Pipeline Graphic -->
+<div class="flex items-center justify-around z-10 py-1">
+<div class="w-7 h-7 rounded-lg bg-[#18181b] border border-cyan-500/40 flex items-center justify-center font-mono text-[10px] text-cyan-300">SQL</div>
+<div class="h-0.5 w-6 bg-gradient-to-r from-cyan-400/40 to-primary-amber/40"></div>
+<div class="w-7 h-7 rounded-lg bg-[#18181b] border border-primary-amber flex items-center justify-center font-mono text-[10px] text-primary-amber shadow-[0_0_8px_rgba(255,194,74,0.3)]">DW</div>
+<div class="h-0.5 w-6 bg-gradient-to-r from-primary-amber/40 to-emerald-400/40"></div>
+<div class="w-7 h-7 rounded-lg bg-[#18181b] border border-emerald-500/40 flex items-center justify-center font-mono text-[10px] text-emerald-300">API</div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted z-10">
+<span class="">SYNC CRON: 15MIN</span>
+<span class="text-cyan-400">STATUS: OK</span>
+</div>
+<div class="absolute -left-6 -bottom-6 w-24 h-24 bg-cyan-500/10 blur-xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center gap-3 mb-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-lg border border-border-hairline shrink-0">
+      ⚙️
+    </div>
+<h3 class="text-lg font-medium text-text-primary">Dados e automações</h3>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-4">
+    Integração entre ferramentas, rotinas automáticas, modelagem de dados e pipelines (ETL/ELT) para empresas com maior fluxo de informações.
+  </p>
+</div>
+<span class="font-mono text-[11px] text-primary-amber tracking-wide pt-2 border-t border-border-hairline">Cloud (AWS/Azure), SQL e automações</span>
+</div>
+<!-- Serviço 5: Manutenção e evolução (spans 2 on desktop) -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline hover:border-border-amber-subtle transition-all flex flex-col justify-between md:col-span-2 lg:col-span-2 group">
+<div>
+<!-- Header / Continuous Support Visual -->
+<div class="w-full h-36 rounded-xl bg-surface-base/90 border border-border-hairline mb-5 p-4 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-[10px] uppercase text-text-secondary">LIFECYCLE // SUPORTE DEDICADO</span>
+</div>
+<span class="font-mono text-[10px] px-2.5 py-0.5 rounded bg-primary-amber/15 text-primary-amber border border-primary-amber/30">SEM INTERMEDIÁRIOS</span>
+</div>
+<!-- Visual Row of support assets -->
+<div class="grid grid-cols-3 gap-3 z-10 py-1">
+<div class="p-2 rounded-lg bg-[#141417] border border-white/5 flex items-center gap-2">
+<span class="text-sm">📖</span>
+<div class="overflow-hidden">
+<div class="text-[11px] font-mono text-text-primary truncate">Manual Ilustrado</div>
+<div class="text-[9px] font-mono text-text-muted">PDF / Notion</div>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-[#141417] border border-white/5 flex items-center gap-2">
+<span class="text-sm">🎓</span>
+<div class="overflow-hidden">
+<div class="text-[11px] font-mono text-text-primary truncate">Treinamento</div>
+<div class="text-[9px] font-mono text-text-muted">Gravado / Ao Vivo</div>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-[#141417] border border-primary-amber/30 flex items-center gap-2">
+<span class="text-sm">⚡</span>
+<div class="overflow-hidden">
+<div class="text-[11px] font-mono text-primary-amber truncate">Ajustes &amp; Upgrades</div>
+<div class="text-[9px] font-mono text-text-muted">Plano Flexível</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted z-10">
+<span class="">GARANTIA DE CONTINUIDADE</span>
+<span class="text-primary-amber">CANAL DIRETO NO WHATSAPP</span>
+</div>
+<div class="absolute right-12 -bottom-10 w-32 h-32 bg-primary-amber/10 blur-2xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center gap-3 mb-2.5">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-lg border border-border-hairline shrink-0">
+      🔧
+    </div>
+<h3 class="text-lg font-medium text-text-primary">Manutenção e evolução</h3>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-4">
+    Manual de uso ilustrado, treinamento prático para a sua equipe, ajustes de rotina e novas funções ao longo do tempo através de um plano mensal flexível e opcional.
+  </p>
+</div>
+<span class="font-mono text-[11px] text-primary-amber tracking-wide pt-2 border-t border-border-hairline">Acompanhamento contínuo e sem intermediários</span>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 4. EXEMPLOS DE TRABALHOS (APLICAÇÕES PRÁTICAS ENRIQUECIDAS COM UI VISUAL) -->
+<!-- ========================================================================= -->
+<section class="relative z-10 w-full border-t border-border-hairline bg-[#08080a]/60 py-12" id="aplicacoes-praticas">
+<div class="max-w-7xl mx-auto px-5 sm:px-8">
+<div class="flex items-center justify-between pb-6 mb-4 border-b border-border-hairline">
+<span class="font-mono text-xs uppercase tracking-widest text-primary-amber">03 // PRODUÇÃO REALIZADA</span>
+<span class="font-mono text-xs uppercase tracking-widest text-text-muted">CASES PRÁTICOS</span>
+</div>
+<div class="max-w-2xl mb-8">
+<h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary mb-3">Aplicações Práticas</h2>
+<p class="text-base text-text-secondary">Projetos reais criados para resolver gargalos práticos com autonomia e leveza.</p>
+</div>
+<!-- Real Cases Grid Enriquecidos -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Case 1: Salão de beleza -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between hover:border-border-amber-subtle transition-all group">
+<div>
+<!-- Mini Graphic: Glassmorphism Agenda & Status -->
+<div class="w-full h-32 rounded-xl bg-surface-base/90 border border-border-hairline p-3 mb-5 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted">
+<span class="text-primary-amber">CALENDAR // GOOGLE SYNC</span>
+<span class="">TER, 14:30</span>
+</div>
+<!-- Micro Schedule rows -->
+<div class="space-y-1.5 z-10 my-auto">
+<div class="p-1.5 rounded bg-[#161619] border border-white/5 flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-1.5 font-mono text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span class="">14:00 • Corte + Escova</span>
+</div>
+<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-400/10 text-emerald-400">Confirmado</span>
+</div>
+<div class="p-1.5 rounded bg-[#161619] border border-primary-amber/30 flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-1.5 font-mono text-primary-amber">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-amber"></span>
+<span class="">15:30 • Mechas &amp; Tonaliz.</span>
+</div>
+<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary-amber/15 text-primary-amber">Em Atend.</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-text-muted">
+<span class="">RECEITA HOJE: R$ 840,00</span>
+<span class="text-emerald-400">8/9 COMPARECERAM</span>
+</div>
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary-amber/10 blur-lg rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">💅</span>
+<h3 class="text-lg font-medium text-text-primary">Agenda e painel para salão</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted uppercase">Agendamento &amp; BI</span>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-6">
+    Agendamento com vários serviços e observações, lembretes no Google Agenda, lista de agendados com status (veio ou cancelou) e painel com valor recebido, serviços mais procurados e formas de pagamento. Inclui calendário de datas comemorativas para divulgação.
+  </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-4 border-t border-border-hairline">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Google Apps Script</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Planilhas</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Google Agenda</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Painel</span>
+</div>
+</div>
+<!-- Case 2: Clínica -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between hover:border-border-amber-subtle transition-all group">
+<div>
+<!-- Mini Graphic: PIN Screen & Secure Protocol -->
+<div class="w-full h-32 rounded-xl bg-surface-base/90 border border-border-hairline p-3 mb-5 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted">
+<span class="text-primary-amber">NOTION + PIN // LGPD SAFE</span>
+<span class="text-emerald-400">CRIPTOGRAFADO</span>
+</div>
+<!-- Clinical Flow mini card -->
+<div class="p-2 rounded bg-[#161619] border border-white/5 my-auto z-10 flex items-center justify-between">
+<div class="space-y-0.5">
+<div class="font-mono text-[10px] text-text-muted">PROTOCOLO ATENDIMENTO</div>
+<div class="text-[12px] font-mono text-text-primary">1. Particular ou Convênio?</div>
+</div>
+<div class="flex items-center gap-1 font-mono text-[10px] px-2 py-1 rounded bg-primary-amber/15 text-primary-amber border border-primary-amber/30">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+<span class="">PIN 4391</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-text-muted">
+<span class="">TABELA DE VALORES ATIVA</span>
+<span class="text-text-secondary">BUSCA GLOBAL ⌘K</span>
+</div>
+<div class="absolute -left-4 -bottom-4 w-20 h-20 bg-primary-amber/10 blur-lg rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">🩺</span>
+<h3 class="text-lg font-medium text-text-primary">Assistente para clínica</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted uppercase">Atendimento Seguro</span>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-6">
+    Guia o atendente passo a passo (particular, convênio, retorno), com base de valores pesquisável, busca em todo o conteúdo, acesso protegido por PIN e documentação clara de manutenção.
+  </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-4 border-t border-border-hairline">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Fluxos de decisão</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Notion</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">LGPD</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Acesso PIN</span>
+</div>
+</div>
+<!-- Case 3: Treino do Aluno -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between hover:border-border-amber-subtle transition-all group">
+<div>
+<!-- Mini Graphic: Fitness Progression Graph & WhatsApp Sync -->
+<div class="w-full h-32 rounded-xl bg-surface-base/90 border border-border-hairline p-3 mb-5 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted">
+<span class="text-primary-amber">TREINO A // CARGA &amp; VÍDEO</span>
+<span class="text-emerald-400">TIMER 45s</span>
+</div>
+<!-- Progression sparkline + metrics -->
+<div class="flex items-center justify-between gap-3 z-10 my-auto">
+<div class="space-y-0.5">
+<div class="text-[11px] font-mono text-text-primary">Agachamento Livre</div>
+<div class="text-[10px] font-mono text-primary-amber">4x10 • 85kg (+5kg)</div>
+</div>
+<!-- SVG sparkline -->
+<svg class="w-24 h-8 text-primary-amber" fill="none" viewBox="0 0 96 32">
+<path d="M4 28 L24 22 L44 24 L64 12 L92 4" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<circle cx="92" cy="4" fill="#FFE5BC" r="3"></circle>
+</svg>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-text-muted">
+<span class="">RESUMO ENVIADO</span>
+<span class="text-emerald-400">WHATSAPP SYNCED ✓</span>
+</div>
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary-amber/10 blur-lg rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">🏋️</span>
+<h3 class="text-lg font-medium text-text-primary">Treino do aluno protótipo</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted uppercase">Protótipo Fitness</span>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-6">
+    Treino do dia com vídeo de cada exercício, marcação de séries, cronômetro de descanso, registro de carga com gráfico de evolução e resumo enviado diretamente para o personal pelo WhatsApp.
+  </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-4 border-t border-border-hairline">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Web</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Celular</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Gráficos</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">WhatsApp</span>
+</div>
+</div>
+<!-- Case 4: Detector de Tom -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between hover:border-border-amber-subtle transition-all group">
+<div>
+<!-- Mini Graphic: Audio Frequency Waveform & Pitch Detector -->
+<div class="w-full h-32 rounded-xl bg-surface-base/90 border border-border-hairline p-3 mb-5 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted">
+<span class="text-primary-amber">DSP // REALTIME MIC FFT</span>
+<span class="text-primary-amber">440.0 Hz</span>
+</div>
+<!-- Sound wave & Key identifier -->
+<div class="flex items-center justify-between gap-3 z-10 my-auto">
+<div class="flex items-center gap-2">
+<span class="text-2xl font-bold font-mono text-primary-amber">A<span class="text-sm font-normal text-text-secondary">maj</span></span>
+<div class="text-[9px] font-mono text-text-muted">CONF: 98%</div>
+</div>
+<!-- Waveform graphic -->
+<div class="flex items-center gap-1 h-8">
+<span class="w-1 h-3 bg-primary-amber/40 rounded-full"></span>
+<span class="w-1 h-6 bg-primary-amber/70 rounded-full"></span>
+<span class="w-1 h-8 bg-primary-amber rounded-full"></span>
+<span class="w-1 h-5 bg-primary-amber/80 rounded-full"></span>
+<span class="w-1 h-7 bg-primary-amber rounded-full"></span>
+<span class="w-1 h-4 bg-primary-amber/50 rounded-full"></span>
+<span class="w-1 h-2 bg-primary-amber/30 rounded-full"></span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-text-muted">
+<span class="">CAMPO: F#m • D • E</span>
+<span class="text-text-secondary">KOTLIN AUDIO ENGINE</span>
+</div>
+<div class="absolute -left-4 -bottom-4 w-20 h-20 bg-primary-amber/10 blur-lg rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">🎵</span>
+<h3 class="text-lg font-medium text-text-primary">Detector de tom musical</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted uppercase">App Android</span>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-6">
+    Escuta a música pelo microfone em tempo real, identifica a nota atual, calcula o tom mais provável e sugere as próximas notas dentro do campo harmônico correspondente.
+  </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-4 border-t border-border-hairline">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Kotlin</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Processamento de áudio</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Harmonia Musical</span>
+</div>
+</div>
+<!-- Case 5: Cifras e Setlist (spans 2 on desktop) -->
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between hover:border-border-amber-subtle transition-all md:col-span-2 lg:col-span-2 group">
+<div>
+<!-- Mini Graphic: 1-Click Transpose & Setlist Live View -->
+<div class="w-full h-32 rounded-xl bg-surface-base/90 border border-border-hairline p-3 mb-5 flex flex-col justify-between relative overflow-hidden group-hover:border-border-amber-subtle transition-colors">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted">
+<span class="text-primary-amber">SETLIST SYNC // LIVE BAND</span>
+<span class="text-primary-amber">TRANSPOSE: +2 SEMITONES</span>
+</div>
+<!-- Chord Row with transposition toggle -->
+<div class="flex flex-wrap items-center justify-between gap-2 z-10 my-auto">
+<div class="flex items-center gap-2 font-mono text-xs">
+<span class="px-2 py-1 rounded bg-[#1c1b1f] border border-primary-amber text-primary-amber font-semibold">G → A</span>
+<span class="px-2 py-1 rounded bg-[#1c1b1f] border border-white/10 text-text-secondary">Em → F#m</span>
+<span class="px-2 py-1 rounded bg-[#1c1b1f] border border-white/10 text-text-secondary">C → D</span>
+<span class="px-2 py-1 rounded bg-[#1c1b1f] border border-white/10 text-text-secondary">D → E</span>
+</div>
+<div class="px-2.5 py-1 rounded bg-primary-amber/15 border border-primary-amber/30 text-[10px] font-mono text-primary-amber flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px]">share</span>
+<span class="">LINK SINCRONIZADO</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-text-muted">
+<span class="">12 MÚSICAS NO REPERTÓRIO</span>
+<span class="text-text-secondary">ATUALIZAÇÃO EM TEMPO REAL PARA TODOS OS MÚSICOS</span>
+</div>
+<div class="absolute right-10 -bottom-6 w-28 h-28 bg-primary-amber/10 blur-xl rounded-full pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">🎼</span>
+<h3 class="text-lg font-medium text-text-primary">Cifras e setlist para bandas</h3>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container text-text-muted uppercase">Web &amp; Ensaios</span>
+</div>
+<p class="text-sm text-text-secondary leading-relaxed mb-6">
+    Cadastro simplificado de músicas e cifras com recurso de transposição de tom em apenas um toque, setlist sincronizada e compartilhada instantaneamente via link para organização rápida de ensaios e apresentações.
+  </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-4 border-t border-border-hairline">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Web</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Planilhas</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Transposição 1-Click</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-surface-container text-text-secondary">Link Compartilhável</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 5. COMO FUNCIONA (METODOLOGIA EM 4 ETAPAS)                                -->
+<!-- ========================================================================= -->
+<section class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-12" id="como-funciona">
+<div class="max-w-2xl mb-8">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-xs uppercase tracking-widest text-primary-amber">04 // ETAPAS DO PROCESSO</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary">Como Funciona</h2>
+</div>
+<!-- 4 Simple Steps -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between">
+<div>
+<span class="font-mono text-xs font-semibold text-primary-amber mb-3 block">ETAPA 01</span>
+<h3 class="text-lg font-medium text-text-primary mb-2">💬 Conversa</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+              Entendo como o seu dia a dia funciona e o que está tomando mais tempo da sua rotina ou da sua equipe.
+            </p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between">
+<div>
+<span class="font-mono text-xs font-semibold text-primary-amber mb-3 block">ETAPA 02</span>
+<h3 class="text-lg font-medium text-text-primary mb-2">🧪 Protótipo Rápido</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+              Você vê uma primeira versão funcionando no celular ou no computador, antes de decidir qualquer coisa.
+            </p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between">
+<div>
+<span class="font-mono text-xs font-semibold text-primary-amber mb-3 block">ETAPA 03</span>
+<h3 class="text-lg font-medium text-text-primary mb-2">✅ Ajustes e Entrega</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+              Refinamos juntos cada detalhe e eu entrego a solução com manual prático e treinamento para a sua equipe.
+            </p>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-surface-card border border-border-hairline flex flex-col justify-between">
+<div>
+<span class="font-mono text-xs font-semibold text-primary-amber mb-3 block">ETAPA 04</span>
+<h3 class="text-lg font-medium text-text-primary mb-2">📈 Evolução</h3>
+<p class="text-sm text-text-secondary leading-relaxed">
+              Novas funções, relatórios adicionais e suporte técnico contínuo através de um plano de acompanhamento mensal flexível.
+            </p>
+</div>
+</div>
+</div>
+<!-- Fair Pricing Banner -->
+<div class="p-4 sm:p-5 rounded-xl bg-surface-card border border-border-hairline flex items-center justify-between flex-wrap gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-amber text-[22px]">verified</span>
+<span class="text-sm text-text-secondary">Valores sob orçamento claro, definidos após entender o que você realmente precisa.</span>
+</div>
+<span class="font-mono text-xs text-text-muted uppercase">Sem contratos abusivos</span>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- 6. QUEM FAZ (ISRAEL MELO) & CONTATO FINAL                                 -->
+<!-- ========================================================================= -->
+<section class="relative z-10 w-full border-t border-border-hairline bg-[#08080a]/60 py-12" id="sobre">
+<div class="max-w-7xl mx-auto px-5 sm:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-12">
+<!-- Bio details -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-xs uppercase tracking-widest text-primary-amber">05 // QUEM FAZ</span>
+</div>
+<h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary">
+              Israel Melo
+            </h2>
+<p class="text-lg text-text-primary font-medium">
+              Engenheiro de dados, com mais de 8 anos em tecnologia e suporte a usuários.
+            </p>
+<p class="text-sm sm:text-base text-text-secondary leading-relaxed">Experiência com modelagem de dados (DW e DM), ETL/ELT, SSIS, Databricks, Azure SQL, Power BI, AWS (S3, Athena e Glue) e automações de ponta a ponta.</p>
+<p class="text-sm sm:text-base text-text-secondary leading-relaxed">
+              Pós-graduação em Business Intelligence, Big Data e Analytics, além de dois MBAs: em Gestão de Processos e em Liderança e Gestão de Equipes.
+            </p>
+</div>
+<!-- Credential Card -->
+<div class="lg:col-span-5 p-7 rounded-2xl bg-surface-card border border-border-hairline shadow-2xl">
+<div class="flex items-center justify-between pb-4 border-b border-border-hairline mb-5">
+<span class="font-mono text-xs uppercase tracking-widest text-text-muted">CREDENCIAIS // RESUMO</span>
+<span class="w-2 h-2 rounded-full bg-primary-amber"></span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-4 rounded-xl bg-surface-container border border-border-hairline">
+<span class="font-mono text-[10px] text-text-muted uppercase">Experiência</span>
+<div class="text-2xl font-semibold text-primary-amber mt-1">+8 Anos</div>
+<span class="text-xs text-text-secondary">Em tecnologia</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-border-hairline">
+<span class="font-mono text-[10px] text-text-muted uppercase">Formações MBA</span>
+<div class="text-2xl font-semibold text-text-primary mt-1">2 MBAs</div>
+<span class="text-xs text-text-secondary">Processos &amp; Gestão</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 font-mono text-xs text-text-secondary">
+<div class="flex justify-between py-1.5 border-b border-white/5">
+<span class="">Stack Nuvem:</span>
+<span class="text-text-primary">AWS (S3, Athena, Glue) &amp; Azure (Databricks), GCP</span>
+</div>
+<div class="flex justify-between py-1.5 border-b border-white/5">
+<span class="">Analytics:</span>
+<span class="text-text-primary">Power BI, SQL, Python, Sheets</span>
+</div>
+<div class="flex justify-between py-1.5">
+<span class="">Entrega:</span>
+<span class="text-text-primary">Mini Apps, APIs, Apps Script</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- FINAL CTA BOX                                                             -->
+<!-- ========================================================================= -->
+<div class="relative p-8 sm:p-12 md:p-14 rounded-3xl bg-surface-card border border-border-amber-subtle overflow-hidden" id="contato">
+<!-- Ambient Amber Glow behind CTA -->
+<div class="pointer-events-none absolute -bottom-16 -right-16 w-80 h-80 bg-primary-amber/15 blur-[90px] rounded-full"></div>
+<div class="relative z-10 max-w-2xl">
+<span class="font-mono text-xs font-medium uppercase tracking-widest text-primary-amber block mb-2">
+              06 // VAMOS CONVERSAR?
+            </span>
+<h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-text-primary mb-4">
+              Vamos descomplicar a sua rotina?
+            </h2>
+<p class="text-base sm:text-lg text-text-secondary leading-relaxed mb-8">
+              Me conte como funciona o seu negócio hoje e onde você sente que perde mais tempo. Eu retorno com uma ideia clara de solução e um protótipo sem compromisso.
+            </p>
+<div class="flex flex-wrap items-center gap-4">
+<a class="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-primary-amber text-black font-semibold text-sm hover:bg-[#ffe082] transition-all shadow-[0_0_30px_rgba(255,194,74,0.3)]" href="https://wa.me/5500000000000" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">chat</span>
+<span class="">Chamar no WhatsApp</span>
+</a>
+<a class="inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-surface-container border border-border-hairline text-text-primary font-medium text-sm hover:border-border-amber-subtle transition-all" href="mailto:contato@israelmelo.dev">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+<span class="">Enviar e-mail</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ========================================================================= -->
+<!-- FOOTER                                                                    -->
+<!-- ========================================================================= -->
+<footer class="w-full bg-[#030304] border-t border-border-hairline py-10">
+<div class="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-amber"></span>
+<span class="font-mono text-xs text-text-secondary">© 2025 JAT Consultoria ✨ // Data &amp; Process</span>
+</div>
+<div class="flex items-center gap-6 font-mono text-xs text-text-muted">
+<a class="hover:text-primary-amber transition-colors" href="https://wa.me/5500000000000">WhatsApp</a>
+<a class="hover:text-primary-amber transition-colors" href="mailto:contato@israelmelo.dev">E-mail</a>
+<a class="hover:text-primary-amber transition-colors" href="#capabilities">Voltar ao topo ↑</a>
+</div>
+</div>
+</footer>
+
+
+</body></html>
