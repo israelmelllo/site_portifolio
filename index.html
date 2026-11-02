@@ -138,6 +138,20 @@
       }
     }
   </style>
+
+<style id="mobile-fix">
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;scroll-behavior:smooth}
+  body{overflow-x:hidden;width:100%;min-width:320px}
+  img,svg,video{max-width:100%;height:auto}
+  .grid>*,.flex>*{min-width:0}
+  h1,h2,h3,p,span,a{overflow-wrap:anywhere}
+  section{scroll-margin-top:72px}
+  @media (max-width:640px){
+    h1{font-size:2.1rem!important;line-height:1.12!important}
+    h2{font-size:1.65rem!important;line-height:1.2!important}
+    .max-w-7xl{padding-left:1.25rem;padding-right:1.25rem}
+  }
+</style>
 </head>
 <body class="bg-surface-base text-text-primary antialiased selection:bg-primary-amber selection:text-black">
 <!-- ========================================================================= -->
